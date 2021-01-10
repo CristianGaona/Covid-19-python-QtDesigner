@@ -64,27 +64,28 @@ class MatplotlibWidget(QMainWindow):
         self.MplWidget.canvas.draw()
 
     def plotPaisCasos(self):
-        pais = 'Ecuador'
+        pais = self.comboBoxCountry.currentText()
         r = self.dataReady.loc[[pais], ['Date', 'Casos']]
         x = r.iloc[:, 0]
         y = r.iloc[:, 1]
+        #self.axes.cla()
         self.MplWidget.canvas.axes.plot(x, y)  # Dibuja el gráfico
         self.MplWidget.canvas.axes.set_title('Casos Covid por Pais')
         #self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
         #self.MplWidget.canvas.axes.set_ylabel("Casos " + pais)  # Inserta el título del eje Y
-        self.axes.cla()
         self.MplWidget.canvas.draw()
 
     def plotPaisMuertes(self):
-        pais = 'Ecuador'
+
+        pais = self.comboBoxCountry.currentText()
         r = self.dataReady.loc[[pais], ['Date', 'Muertes']]
         x = r.iloc[:, 0]
         y = r.iloc[:, 1]
+        #self.axes.cla()
         self.MplWidget.canvas.axes.plot(x, y)  # Dibuja el gráfico
-        self.MplWidget.canvas.axes.set_title('Casos Covid por Pais')
+        self.MplWidget.canvas.axes.set_title('Muertes Covid por Pais')
         # self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
         # self.MplWidget.canvas.axes.set_ylabel("Casos " + pais)  # Inserta el título del eje Y
-        self.axes.cla()
         self.MplWidget.canvas.draw()
 
     # Esta función abre el archivo CSV
@@ -112,6 +113,16 @@ class MatplotlibWidget(QMainWindow):
 
             # Agregar indice
             self.dataReady.set_index("Country", inplace=True)
+
+
+            # Reemplazar los nan por All
+            data_r = self.dataReady.replace("nan", "All")
+
+            #Agrupar Paises
+            grouped = data_r.groupby(['Country'])
+            df2 = grouped.sum()
+
+            self.comboBoxCountry.addItems(list(df2.index))
 
 
 

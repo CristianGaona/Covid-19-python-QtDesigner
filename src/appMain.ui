@@ -6,32 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1042</width>
-    <height>818</height>
+    <width>1141</width>
+    <height>886</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="bntCargarCSV">
+   <widget class="MplWidget" name="MplWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>90</y>
-      <width>281</width>
-      <height>28</height>
+      <x>60</x>
+      <y>40</y>
+      <width>1011</width>
+      <height>571</height>
      </rect>
-    </property>
-    <property name="text">
-     <string>Importar archivo CSV</string>
     </property>
    </widget>
    <widget class="QPushButton" name="bntGraficar">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>130</y>
+      <x>770</x>
+      <y>730</y>
       <width>141</width>
       <height>28</height>
      </rect>
@@ -40,21 +37,11 @@
      <string>Casos</string>
     </property>
    </widget>
-   <widget class="MplWidget" name="MplWidget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>200</y>
-      <width>1011</width>
-      <height>571</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="bntMuertes">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>130</y>
+      <x>920</x>
+      <y>730</y>
       <width>131</width>
       <height>28</height>
      </rect>
@@ -63,13 +50,49 @@
      <string>Muertes</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="bntCargarCSV">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>690</y>
+      <width>281</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Importar archivo CSV</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxCountry">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>640</y>
+      <width>271</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>620</y>
+      <width>171</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Seleccione un pais:</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1042</width>
+     <width>1141</width>
      <height>26</height>
     </rect>
    </property>
