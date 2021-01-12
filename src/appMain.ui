@@ -24,37 +24,11 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="bntGraficar">
-    <property name="geometry">
-     <rect>
-      <x>770</x>
-      <y>730</y>
-      <width>141</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Casos</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="bntMuertes">
-    <property name="geometry">
-     <rect>
-      <x>920</x>
-      <y>730</y>
-      <width>131</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Muertes</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="bntCargarCSV">
     <property name="geometry">
      <rect>
-      <x>770</x>
-      <y>690</y>
+      <x>600</x>
+      <y>640</y>
       <width>281</width>
       <height>28</height>
      </rect>
@@ -76,7 +50,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>50</x>
       <y>620</y>
       <width>171</width>
       <height>16</height>
@@ -84,6 +58,94 @@
     </property>
     <property name="text">
      <string>Seleccione un pais:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bntBoth">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>640</y>
+      <width>121</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Aux</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>680</y>
+      <width>121</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Seleccionar</string>
+    </property>
+    <widget class="QRadioButton" name="radioButtonCasos">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>95</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Casos</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonMuertes">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>60</y>
+       <width>95</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Muertes</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonAmbos">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>90</y>
+       <width>95</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Ambos</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QComboBox" name="comboBoxEstado">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>640</y>
+      <width>221</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>620</y>
+      <width>171</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Seleccione estado</string>
     </property>
    </widget>
   </widget>
