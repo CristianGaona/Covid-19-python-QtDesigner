@@ -24,19 +24,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="bntCargarCSV">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>640</y>
-      <width>281</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Importar archivo CSV</string>
-    </property>
-   </widget>
    <widget class="QComboBox" name="comboBoxCountry">
     <property name="geometry">
      <rect>
@@ -60,30 +47,20 @@
      <string>Seleccione un pais:</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="bntBoth">
-    <property name="geometry">
-     <rect>
-      <x>900</x>
-      <y>640</y>
-      <width>121</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Aux</string>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>600</x>
-      <y>680</y>
+      <y>620</y>
       <width>121</width>
       <height>131</height>
      </rect>
     </property>
     <property name="title">
      <string>Seleccionar</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
     </property>
     <widget class="QRadioButton" name="radioButtonCasos">
      <property name="geometry">
@@ -96,6 +73,12 @@
      </property>
      <property name="text">
       <string>Casos</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QRadioButton" name="radioButtonMuertes">
@@ -110,6 +93,12 @@
      <property name="text">
       <string>Muertes</string>
      </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
     </widget>
     <widget class="QRadioButton" name="radioButtonAmbos">
      <property name="geometry">
@@ -122,6 +111,9 @@
      </property>
      <property name="text">
       <string>Ambos</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
