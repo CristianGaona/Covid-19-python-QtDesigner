@@ -50,8 +50,8 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>620</y>
+      <x>610</x>
+      <y>690</y>
       <width>121</width>
       <height>131</height>
      </rect>
@@ -140,14 +140,14 @@
      </rect>
     </property>
     <property name="text">
-     <string>Seleccione estado</string>
+     <string>Seleccione estado:</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>630</y>
+      <y>690</y>
       <width>120</width>
       <height>101</height>
      </rect>
@@ -184,6 +184,32 @@
       <bool>true</bool>
      </property>
     </widget>
+   </widget>
+   <widget class="QSlider" name="sliderPromedio">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>640</y>
+      <width>251</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>640</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Promedio:</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

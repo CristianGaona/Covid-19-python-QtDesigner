@@ -23,27 +23,54 @@ class MatplotlibWidget(QMainWindow):
         QMainWindow.__init__(self)
 
         loadUi("appMain.ui", self)
-        self.getCSV()
-        self.indexState()
-        self.setWindowTitle("PyQt5 & Matplotlib Example GUI")
-        self.addToolBar(NavigationToolbar(self.MplWidget.canvas, self))
-        self.comboBoxCountry.activated.connect(self.clearStates)
-        self.comboBoxCountry.activated.connect(self.loadEstados)
+        self.getCSV() # Cargar datos CSV
+        self.indexState() # Indice para estados
+        self.indexDate() # Indice de fechas
+        self.setWindowTitle("Dashboard Covid 19 QT Designer ") # Título de MainWindows
+        self.addToolBar(NavigationToolbar(self.MplWidget.canvas, self)) # Agregar Axes
+        self.comboBoxCountry.activated.connect(self.clearStates) # Limpiar listBox de estados, para una carga nueva
+        self.comboBoxCountry.activated.connect(self.loadEstados) # Cargar estados al listBox
 
-        self.plotAmbosPaises()
-        self.radioButtonCasos.clicked.connect(self.plotPaisCasos)
-        self.radioButtonMuertes.clicked.connect(self.plotPaisMuertes)
-        self.radioButtonAmbos.clicked.connect(self.plotAmbosPaises)
+        self.plotAmbosPaises() # Graficar de inicio Muertes y casos acumulativos
 
-        self.radioButtonCasos.clicked.connect(self.plotEstadosCasos)
-        self.radioButtonMuertes.clicked.connect(self.plotEstadoMuertes)
-        self.radioButtonAmbos.clicked.connect(self.plotAmbosEstados)
+        # llamar métodos según el radio Button seleccionado para graficar
+        self.radioButtonCasos.clicked.connect(self.selectPlotCasos)
+        self.radioButtonMuertes.clicked.connect(self.selectPlotMuertes)
+        self.radioButtonAmbos.clicked.connect(self.selectPlotAmbos)
 
+        # llamar métodos según el radio Button seleccionado para graficar datos diarios y acumulados
+        self.radioButtonDiarios.clicked.connect(self.DatosDiarios)
+        self.radioButton_2.clicked.connect(self.DatosAcumulativos)
+
+        # Al hacer clic en un pais se grafica de forma automática segun los radio Buttos y listBox activados
         self.comboBoxCountry.activated.connect(self.btnstate)
 
+        # Al hacer clic en un estado se grafica de forma automática segun los radio Buttos y listBox activados
         self.comboBoxEstado.activated.connect(self.btnstate2)
 
     # =============== Métodos ======================
+    # Diarios Datos
+    def DatosDiarios(self):
+        if self.radioButtonCasos.isChecked() and self.radioButtonDiarios.isChecked():
+            self.selectPlotCasos()
+        elif self.radioButtonMuertes.isChecked() and self.radioButtonDiarios.isChecked():
+            self.selectPlotMuertes()
+        elif self.radioButtonAmbos.isChecked() and self.radioButtonDiarios.isChecked():
+            self.selectPlotAmbos()
+
+    # Datos Acumulativos
+    def DatosAcumulativos(self):
+        print("ento aqui")
+        if self.radioButtonCasos.isChecked() :
+            print("1")
+            self.selectPlotCasos()
+        elif self.radioButtonMuertes.isChecked():
+            print("2")
+            self.selectPlotMuertes()
+        elif self.radioButtonAmbos.isChecked() :
+            print("3")
+            self.selectPlotAmbos()
+
     # Definir estos de los radioButton
     def btnstate(self):
         print("ENTRO 1")
@@ -68,8 +95,26 @@ class MatplotlibWidget(QMainWindow):
         elif self.comboBoxEstado.activated and self.radioButtonAmbos.isChecked():
             self.plotAmbosEstados()
 
-    # Casos pais
+    # Método para escoger si grafica Datos paises o estados de acuerdo a los radio buttons (Casos, Muertes, Ambos)
+    def selectPlotCasos(self):
+        if self.comboBoxCountry.activated and self.radioButtonCasos.isChecked() and self.comboBoxEstado.currentText() == 'All':
+            self.plotPaisCasos()
+        elif self.comboBoxEstado.activated and self.radioButtonCasos.isChecked() and self.comboBoxEstado.currentText() != 'All':
+            self.plotEstadosCasos()
 
+    def selectPlotMuertes(self):
+        if self.comboBoxCountry.activated and self.radioButtonMuertes.isChecked() and self.comboBoxEstado.currentText() == 'All':
+            self.plotPaisMuertes()
+        elif self.comboBoxEstado.activated and self.radioButtonMuertes.isChecked() and self.comboBoxEstado.currentText() != 'All':
+            self.plotEstadoMuertes()
+
+    def selectPlotAmbos(self):
+        if self.comboBoxCountry.activated and self.radioButtonAmbos.isChecked() and self.comboBoxEstado.currentText() == 'All':
+            self.plotAmbosPaises()
+        elif self.comboBoxEstado.activated and self.radioButtonAmbos.isChecked() and self.comboBoxEstado.currentText() != 'All':
+            self.plotAmbosEstados()
+
+    # Casos pais
     def plotPaisCasos(self):
         print("Casos paises")
         self.MplWidget.canvas.axes.cla()
@@ -80,7 +125,7 @@ class MatplotlibWidget(QMainWindow):
         y = r.iloc[:, 1]
 
         if self.radioButtonCasos.isChecked() and self.radioButton_2.isChecked():
-            print("Entro acumulados")
+            print("Entro acumulados paises")
             self.MplWidget.canvas.axes.plot(x, y, 'r', label="Casos")
             self.MplWidget.canvas.axes.legend()
             self.MplWidget.canvas.axes.set_title("Casos Acumulados Covid pais de " + pais)
@@ -88,9 +133,8 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
 
         elif self.radioButtonCasos.isChecked() and self.radioButtonDiarios.isChecked():
-            print("Entro diarios")
+            print("Entro diarios paises")
 
-            # ====================parte2===================
             casosArray = np.zeros([len(y), 1], dtype=int)
 
             casosAux = np.zeros([len(y), 1], dtype=int)
@@ -127,11 +171,38 @@ class MatplotlibWidget(QMainWindow):
             r = self.indState.loc[[estado], ['Date', 'Casos']]
             x = r.iloc[:, 0]
             y = r.iloc[:, 1]
-            self.MplWidget.canvas.axes.plot(x, y, label="Casos")  # Dibuja el gráfico
-            self.MplWidget.canvas.axes.legend()
-            self.MplWidget.canvas.axes.set_title("Casos Covid de " + estado)
-            self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
-            self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
+
+            if self.radioButtonCasos.isChecked() and self.radioButton_2.isChecked():
+                print("Entro acumulados estado")
+                self.MplWidget.canvas.axes.plot(x, y, 'r', label="Casos")
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Casos Acumulados Covid " + estado)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
+            elif self.radioButtonCasos.isChecked() and self.radioButtonDiarios.isChecked():
+                print("Entro diarios estado")
+
+                casosArray = np.zeros([len(y), 1], dtype=int)
+
+                casosAux = np.zeros([len(y), 1], dtype=int)
+
+                for i in range(len(y)):
+
+                    if i == 0:
+                        casosArray[0] = 0
+                    else:
+                        casosAux[i] = (y[i].sum() - y[i - 1].sum())
+
+                        if casosAux[i] < 0:
+                            casosArray[i] = 0
+                        else:
+                            casosArray[i] = casosAux[i]
+
+                self.MplWidget.canvas.axes.plot(x, casosArray, 'r', label="Casos")
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Casos Diarios Covid pais de " + estado)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
             self.MplWidget.canvas.draw()
 
     # Muertes estado
@@ -146,11 +217,39 @@ class MatplotlibWidget(QMainWindow):
             r = self.indState.loc[[estado], ['Date', 'Muertes']]
             x = r.iloc[:, 0]
             y = r.iloc[:, 1]
-            self.MplWidget.canvas.axes.plot(x, y, label="Muertes")  # Dibuja el gráfico
-            self.MplWidget.canvas.axes.legend()
-            self.MplWidget.canvas.axes.set_title("Muertes Covid de " + estado)
-            self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
-            self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+            if self.radioButtonMuertes.isChecked() and self.radioButton_2.isChecked():
+                print("Entro acumulados estados")
+                self.MplWidget.canvas.axes.plot(x, y, label="Muertes")
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Muertes Acumuladas Covid de " + estado)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+            elif self.radioButtonMuertes.isChecked() and self.radioButtonDiarios.isChecked():
+                print("Entro diarios estados")
+
+                muertesArray = np.zeros([len(y), 1], dtype=int)
+
+                muertesAux = np.zeros([len(y), 1], dtype=int)
+
+                for i in range(len(y)):
+
+                    if i == 0:
+                        muertesArray[0] = 0
+                    else:
+                        muertesAux[i] = (y[i].sum() - y[i - 1].sum())
+
+                        if muertesAux[i] < 0:
+                            muertesArray[i] = 0
+                        else:
+                            muertesArray[i] = muertesAux[i]
+
+                self.MplWidget.canvas.axes.plot(x, muertesArray, label="Muertes")
+
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Muertes Diarias Covid de " + estado)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+
             self.MplWidget.canvas.draw()
 
     # Muertes pais
@@ -164,7 +263,7 @@ class MatplotlibWidget(QMainWindow):
         y = r.iloc[:, 1]
 
         if self.radioButtonMuertes.isChecked() and self.radioButton_2.isChecked():
-            print("Entro acumulados")
+            print("Entro acumulados paises")
             self.MplWidget.canvas.axes.plot(x, y, label="Muertes")
             self.MplWidget.canvas.axes.legend()
             self.MplWidget.canvas.axes.set_title("Muertes Acumuladas Covid pais de " + pais)
@@ -172,9 +271,8 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
 
         elif self.radioButtonMuertes.isChecked() and self.radioButtonDiarios.isChecked():
-            print("Entro diarios")
+            print("Entro diarios paises")
 
-            # ====================parte2===================
             muertesArray = np.zeros([len(y), 1], dtype=int)
 
             muertesAux = np.zeros([len(y), 1], dtype=int)
@@ -201,6 +299,7 @@ class MatplotlibWidget(QMainWindow):
         self.MplWidget.canvas.draw()
 
     def plotAmbosPaises(self):
+        self.rollingMean()
         print("Casos y Muertes paises")
         # Borrar Axes
         self.MplWidget.canvas.axes.cla()
@@ -215,7 +314,7 @@ class MatplotlibWidget(QMainWindow):
         y = r.iloc[:, 1]
         # Obtener datos de Muertes
         if self.radioButtonAmbos.isChecked() and self.radioButton_2.isChecked():
-            print("Entro acumulados")
+            print("Entro acumulados paises")
             self.MplWidget.canvas.axes.plot(x, y, 'r', label="Casos")
             self.MplWidget.canvas.axes1.plot(x1, y1, label="Muertes")
             self.MplWidget.canvas.axes.set_title("Muertes y Casos Acumulados Covid pais de " + pais)
@@ -223,9 +322,8 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
             self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
         elif self.radioButtonAmbos.isChecked() and self.radioButtonDiarios.isChecked():
-            print("Entro diarios")
+            print("Entro diarios paises")
 
-            # ====================parte2===================
             muertesArray = np.zeros([len(y1), 1], dtype=int)
             casosArray = np.zeros([len(y1), 1], dtype=int)
 
@@ -279,16 +377,47 @@ class MatplotlibWidget(QMainWindow):
             r = self.indState.loc[[estado], ['Date', 'Casos']]
             x = r.iloc[:, 0]
             y = r.iloc[:, 1]
+            if self.radioButtonAmbos.isChecked() and self.radioButton_2.isChecked():
+                print("Entro acumulados estados")
 
-            self.MplWidget.canvas.axes.plot(x, y, 'r', label="Casos")
-            self.MplWidget.canvas.axes1.plot(x1, y1, label="Muertes")
+                self.MplWidget.canvas.axes.plot(x, y, 'r', label="Casos")
+                self.MplWidget.canvas.axes1.plot(x1, y1, label="Muertes")
 
-            self.MplWidget.canvas.axes.set_title("Muertes y Casos Covid de " + estado)
-            self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
-            self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
-            self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
-            # self.MplWidget.canvas.axes.legend()
-            # self.MplWidget.canvas.axes1.legend()
+                self.MplWidget.canvas.axes.set_title("Muertes y Casos Covid de " + estado)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
+                self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+            elif self.radioButtonAmbos.isChecked() and self.radioButtonDiarios.isChecked():
+                print("Entro diarios diarios")
+                muertesArray = np.zeros([len(y1), 1], dtype=int)
+                casosArray = np.zeros([len(y1), 1], dtype=int)
+
+                muertesAux = np.zeros([len(y1), 1], dtype=int)
+                casosAux = np.zeros([len(y1), 1], dtype=int)
+
+                for i in range(len(y1)):
+
+                    if i == 0:
+                        muertesArray[0] = 0
+                        casosArray[0] = 0
+                    else:
+                        muertesAux[i] = (y1[i].sum() - y1[i - 1].sum())
+                        casosAux[i] = (y[i].sum() - y[i - 1].sum())
+                        if muertesAux[i] < 0:
+                            muertesArray[i] = 0
+                        else:
+                            muertesArray[i] = muertesAux[i]
+                        if casosAux[i] < 0:
+                            casosArray[i] = 0
+                        else:
+                            casosArray[i] = casosAux[i]
+                self.MplWidget.canvas.axes.plot(x, casosArray, 'r', label="Casos")
+                self.MplWidget.canvas.axes1.plot(x1, muertesArray, label="Muertes")
+
+                self.MplWidget.canvas.axes.set_title("Muertes y Casos Diarios  de " + estado)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
+                self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
 
             self.MplWidget.canvas.draw()
 
@@ -298,6 +427,9 @@ class MatplotlibWidget(QMainWindow):
 
     # Método para cargar los estados en combo box
     def loadEstados(self):
+        # Borrar Axes
+        self.MplWidget.canvas.axes.cla()
+        self.MplWidget.canvas.axes1.cla()
         listEstado = []
         listEstado.append('All')
         pais_data = self.comboBoxCountry.currentText()
@@ -335,6 +467,7 @@ class MatplotlibWidget(QMainWindow):
 
         # Reemplazar los nan por All
         self.data_r = self.dataReady.replace("nan", "All")
+        self.data_d = self.dataReady.replace("nan", "All")
 
         # Agrupar Paises
         self.grouped = self.data_r.groupby(['Country'])
@@ -352,6 +485,12 @@ class MatplotlibWidget(QMainWindow):
         self.indState = self.data_r
         self.indState.set_index("State", inplace=True)
 
+    def indexDate(self):
+        self.indDate = self.data_d
+        self.indDate.set_index("Date", inplace= True)
+
+    def rollingMean(self):
+        print(self.indDate.rolling(2).mean())
 
 app = QApplication([])
 window = MatplotlibWidget()
