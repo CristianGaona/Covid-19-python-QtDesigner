@@ -31,6 +31,7 @@ class MatplotlibWidget(QMainWindow):
         self.comboBoxCountry.activated.connect(self.clearStates) # Limpiar listBox de estados, para una carga nueva
         self.comboBoxCountry.activated.connect(self.loadEstados) # Cargar estados al listBox
 
+
         self.plotAmbosPaises() # Graficar de inicio Muertes y casos acumulativos
 
         # llamar métodos según el radio Button seleccionado para graficar
@@ -47,6 +48,9 @@ class MatplotlibWidget(QMainWindow):
 
         # Al hacer clic en un estado se grafica de forma automática segun los radio Buttos y listBox activados
         self.comboBoxEstado.activated.connect(self.btnstate2)
+
+        # Según se mueva el slider y de acurdo a los radio buttons selccionados se presentará la media móvil
+        self.sliderPromedio.valueChanged.connect(self.sliderSelect)
 
     # =============== Métodos ======================
     # Diarios Datos
@@ -95,6 +99,16 @@ class MatplotlibWidget(QMainWindow):
         elif self.comboBoxEstado.activated and self.radioButtonAmbos.isChecked():
             self.plotAmbosEstados()
 
+    def sliderSelect(self):
+        if self.radioButtonCasos.isChecked():
+            #self.sliderPromedio.setValue(1)
+            self.selectPlotCasos()
+        elif self.radioButtonMuertes.isChecked():
+            #self.sliderPromedio.setValue(1)
+            self.selectPlotMuertes()
+        elif self.radioButtonAmbos.isChecked():
+            #self.sliderPromedio.setValue(1)
+            self.selectPlotAmbos()
     # Método para escoger si grafica Datos paises o estados de acuerdo a los radio buttons (Casos, Muertes, Ambos)
     def selectPlotCasos(self):
         if self.comboBoxCountry.activated and self.radioButtonCasos.isChecked() and self.comboBoxEstado.currentText() == 'All':
@@ -123,7 +137,8 @@ class MatplotlibWidget(QMainWindow):
         r = self.dataReady.loc[[pais], ['Date', 'Casos']]
         x = r.iloc[:, 0]
         y = r.iloc[:, 1]
-
+        slider = self.rollingMean()
+        rolling_mean = r.iloc[:, 1].rolling(window=slider).mean()
         if self.radioButtonCasos.isChecked() and self.radioButton_2.isChecked():
             print("Entro acumulados paises")
             self.MplWidget.canvas.axes.plot(x, y, 'r', label="Casos")
@@ -131,6 +146,14 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_title("Casos Acumulados Covid pais de " + pais)
             self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
+
+            if self.sliderPromedio.value() > 1:
+                self.MplWidget.canvas.axes.cla()
+                self.MplWidget.canvas.axes.plot(x, rolling_mean, 'r', label="Casos")
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Casos Acumuladas Promedio Covid pais de " + pais)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
 
         elif self.radioButtonCasos.isChecked() and self.radioButtonDiarios.isChecked():
             print("Entro diarios paises")
@@ -156,6 +179,16 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_title("Casos Diarios Covid pais de " + pais)
             self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
+            df_MuertesDiarias = pd.DataFrame(casosArray, columns=['Casos'])
+            rolling_mean2 = df_MuertesDiarias.rolling(window=slider).mean()
+            if self.sliderPromedio.value() > 1:
+                self.MplWidget.canvas.axes.cla()
+                self.MplWidget.canvas.axes.plot(x, rolling_mean2, 'r', label="Casos")
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Casos Diarias Promedio Covid pais de " + pais)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
+
         self.MplWidget.canvas.draw()
 
     # Casos estado
@@ -171,6 +204,8 @@ class MatplotlibWidget(QMainWindow):
             r = self.indState.loc[[estado], ['Date', 'Casos']]
             x = r.iloc[:, 0]
             y = r.iloc[:, 1]
+            slider = self.rollingMean()
+            rolling_mean = r.iloc[:, 1].rolling(window=slider).mean()
 
             if self.radioButtonCasos.isChecked() and self.radioButton_2.isChecked():
                 print("Entro acumulados estado")
@@ -179,6 +214,13 @@ class MatplotlibWidget(QMainWindow):
                 self.MplWidget.canvas.axes.set_title("Casos Acumulados Covid " + estado)
                 self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
                 self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
+                if self.sliderPromedio.value() > 1:
+                    self.MplWidget.canvas.axes.cla()
+                    self.MplWidget.canvas.axes.plot(x, rolling_mean, 'r', label="Casos")
+                    self.MplWidget.canvas.axes.legend()
+                    self.MplWidget.canvas.axes.set_title("Casos Promedio Acumulados Covid " + estado)
+                    self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                    self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
             elif self.radioButtonCasos.isChecked() and self.radioButtonDiarios.isChecked():
                 print("Entro diarios estado")
 
@@ -203,6 +245,15 @@ class MatplotlibWidget(QMainWindow):
                 self.MplWidget.canvas.axes.set_title("Casos Diarios Covid pais de " + estado)
                 self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
                 self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
+                df_MuertesDiarias = pd.DataFrame(casosArray, columns=['Casos'])
+                rolling_mean2 = df_MuertesDiarias.rolling(window=slider).mean()
+                if self.sliderPromedio.value() > 1:
+                    self.MplWidget.canvas.axes.cla()
+                    self.MplWidget.canvas.axes.plot(x, rolling_mean2, 'r', label="Casos")
+                    self.MplWidget.canvas.axes.legend()
+                    self.MplWidget.canvas.axes.set_title("Casos Promedio Diarios Covid de " + estado)
+                    self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                    self.MplWidget.canvas.axes.set_ylabel("Cantidad de Casos ")  # Inserta el título del eje Y
             self.MplWidget.canvas.draw()
 
     # Muertes estado
@@ -217,6 +268,8 @@ class MatplotlibWidget(QMainWindow):
             r = self.indState.loc[[estado], ['Date', 'Muertes']]
             x = r.iloc[:, 0]
             y = r.iloc[:, 1]
+            slider = self.rollingMean()
+            rolling_mean = r.iloc[:, 1].rolling(window=slider).mean()
             if self.radioButtonMuertes.isChecked() and self.radioButton_2.isChecked():
                 print("Entro acumulados estados")
                 self.MplWidget.canvas.axes.plot(x, y, label="Muertes")
@@ -224,6 +277,13 @@ class MatplotlibWidget(QMainWindow):
                 self.MplWidget.canvas.axes.set_title("Muertes Acumuladas Covid de " + estado)
                 self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
                 self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+                if self.sliderPromedio.value() > 1:
+                    self.MplWidget.canvas.axes.cla()
+                    self.MplWidget.canvas.axes.plot(x, rolling_mean, label="Muertes")
+                    self.MplWidget.canvas.axes.legend()
+                    self.MplWidget.canvas.axes.set_title("Muertes Promedio Acumuladas Covid de " + estado)
+                    self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                    self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
             elif self.radioButtonMuertes.isChecked() and self.radioButtonDiarios.isChecked():
                 print("Entro diarios estados")
 
@@ -249,6 +309,15 @@ class MatplotlibWidget(QMainWindow):
                 self.MplWidget.canvas.axes.set_title("Muertes Diarias Covid de " + estado)
                 self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
                 self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+                df_MuertesDiarias = pd.DataFrame(muertesArray, columns=['Muertes'])
+                rolling_mean2 = df_MuertesDiarias.rolling(window=slider).mean()
+                if self.sliderPromedio.value() > 1:
+                    self.MplWidget.canvas.axes.cla()
+                    self.MplWidget.canvas.axes.plot(x, rolling_mean2, label="Muertes")
+                    self.MplWidget.canvas.axes.legend()
+                    self.MplWidget.canvas.axes.set_title("Muertes Promedio Diarias Covid de " + estado)
+                    self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                    self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
 
             self.MplWidget.canvas.draw()
 
@@ -261,8 +330,10 @@ class MatplotlibWidget(QMainWindow):
         r = self.dataReady.loc[[pais], ['Date', 'Muertes']]
         x = r.iloc[:, 0]
         y = r.iloc[:, 1]
-
+        slider = self.rollingMean()
+        rolling_mean = r.iloc[:, 1].rolling(window=slider).mean()
         if self.radioButtonMuertes.isChecked() and self.radioButton_2.isChecked():
+
             print("Entro acumulados paises")
             self.MplWidget.canvas.axes.plot(x, y, label="Muertes")
             self.MplWidget.canvas.axes.legend()
@@ -270,7 +341,17 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
 
+            if self.sliderPromedio.value() > 1:
+                self.MplWidget.canvas.axes.cla()
+                self.MplWidget.canvas.axes.plot(x, rolling_mean, label="Muertes")
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Muertes Acumuladas Promedio Covid pais de " + pais)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+
         elif self.radioButtonMuertes.isChecked() and self.radioButtonDiarios.isChecked():
+
+
             print("Entro diarios paises")
 
             muertesArray = np.zeros([len(y), 1], dtype=int)
@@ -295,11 +376,20 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_title("Muertes Diarias Covid pais de " + pais)
             self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+            df_MuertesDiarias = pd.DataFrame(muertesArray, columns=['Muertes'])
+            rolling_mean2 = df_MuertesDiarias.rolling(window=slider).mean()
+            if self.sliderPromedio.value() > 1:
+                self.MplWidget.canvas.axes.cla()
+                self.MplWidget.canvas.axes.plot(x, rolling_mean2, label="Muertes")
+                self.MplWidget.canvas.axes.legend()
+                self.MplWidget.canvas.axes.set_title("Muertes Diarias Promedio Covid pais de " + pais)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
 
         self.MplWidget.canvas.draw()
 
     def plotAmbosPaises(self):
-        self.rollingMean()
+
         print("Casos y Muertes paises")
         # Borrar Axes
         self.MplWidget.canvas.axes.cla()
@@ -312,6 +402,12 @@ class MatplotlibWidget(QMainWindow):
         r = self.dataReady.loc[[pais], ['Date', 'Casos']]
         x = r.iloc[:, 0]
         y = r.iloc[:, 1]
+
+        slider = self.rollingMean()
+        rolling_mean_CA = r.iloc[:, 1].rolling(window=slider).mean()
+        rolling_mean_MA = r1.iloc[:, 1].rolling(window=slider).mean()
+
+
         # Obtener datos de Muertes
         if self.radioButtonAmbos.isChecked() and self.radioButton_2.isChecked():
             print("Entro acumulados paises")
@@ -321,6 +417,15 @@ class MatplotlibWidget(QMainWindow):
             self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
             self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+            if self.sliderPromedio.value() > 1:
+                self.MplWidget.canvas.axes.cla()
+                self.MplWidget.canvas.axes1.cla()
+                self.MplWidget.canvas.axes.plot(x, rolling_mean_CA, 'r', label="Casos")
+                self.MplWidget.canvas.axes1.plot(x1, rolling_mean_MA, label="Muertes")
+                self.MplWidget.canvas.axes.set_title("Muertes y Casos Promedio Acumulados Covid pais de " + pais)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
+                self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
         elif self.radioButtonAmbos.isChecked() and self.radioButtonDiarios.isChecked():
             print("Entro diarios paises")
 
@@ -348,13 +453,24 @@ class MatplotlibWidget(QMainWindow):
                         casosArray[i] = casosAux[i]
             self.MplWidget.canvas.axes.plot(x, casosArray, 'r', label="Casos")
             self.MplWidget.canvas.axes1.plot(x1, muertesArray, label="Muertes")
-
             self.MplWidget.canvas.axes.set_title("Muertes y Casos Diarios pais de " + pais)
             self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
             self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
             self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
-        # self.MplWidget.canvas.axes.legend()
-        # self.MplWidget.canvas.axes1.legend()
+            df_MuertesDiarias = pd.DataFrame(casosArray, columns=['Muertes'])
+            df_CasosDiarios = pd.DataFrame(muertesArray, columns=['Casos'])
+            rolling_mean_MD = df_MuertesDiarias.rolling(window=slider).mean()
+            rolling_mean_CD = df_CasosDiarios.rolling(window=slider).mean()
+            if self.sliderPromedio.value() > 1:
+                self.MplWidget.canvas.axes.cla()
+                self.MplWidget.canvas.axes1.cla()
+                self.MplWidget.canvas.axes.plot(x, rolling_mean_CD, 'r', label="Casos")
+                self.MplWidget.canvas.axes1.plot(x1, rolling_mean_MD, label="Muertes")
+                self.MplWidget.canvas.axes.set_title("Muertes y Casos Promedio Diarios pais de " + pais)
+                self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
+                self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+
 
         self.MplWidget.canvas.draw()
 
@@ -377,6 +493,10 @@ class MatplotlibWidget(QMainWindow):
             r = self.indState.loc[[estado], ['Date', 'Casos']]
             x = r.iloc[:, 0]
             y = r.iloc[:, 1]
+
+            slider = self.rollingMean()
+            rolling_mean_CA = r.iloc[:, 1].rolling(window=slider).mean()
+            rolling_mean_MA = r1.iloc[:, 1].rolling(window=slider).mean()
             if self.radioButtonAmbos.isChecked() and self.radioButton_2.isChecked():
                 print("Entro acumulados estados")
 
@@ -387,6 +507,15 @@ class MatplotlibWidget(QMainWindow):
                 self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
                 self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
                 self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+                if self.sliderPromedio.value() > 1:
+                    self.MplWidget.canvas.axes.cla()
+                    self.MplWidget.canvas.axes1.cla()
+                    self.MplWidget.canvas.axes.plot(x, rolling_mean_CA, 'r', label="Casos")
+                    self.MplWidget.canvas.axes1.plot(x1, rolling_mean_MA, label="Muertes")
+                    self.MplWidget.canvas.axes.set_title("Muertes y Casos Promedio Covid de " + estado)
+                    self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                    self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
+                    self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
             elif self.radioButtonAmbos.isChecked() and self.radioButtonDiarios.isChecked():
                 print("Entro diarios diarios")
                 muertesArray = np.zeros([len(y1), 1], dtype=int)
@@ -418,6 +547,19 @@ class MatplotlibWidget(QMainWindow):
                 self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
                 self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
                 self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
+                df_MuertesDiarias = pd.DataFrame(casosArray, columns=['Muertes'])
+                df_CasosDiarios = pd.DataFrame(muertesArray, columns=['Casos'])
+                rolling_mean_MD = df_MuertesDiarias.rolling(window=slider).mean()
+                rolling_mean_CD = df_CasosDiarios.rolling(window=slider).mean()
+                if self.sliderPromedio.value() > 1:
+                    self.MplWidget.canvas.axes.cla()
+                    self.MplWidget.canvas.axes1.cla()
+                    self.MplWidget.canvas.axes.plot(x, rolling_mean_CD, 'r', label="Casos")
+                    self.MplWidget.canvas.axes1.plot(x1, rolling_mean_MD, label="Muertes")
+                    self.MplWidget.canvas.axes.set_title("Muertes y Casos Promedio Diarios  de " + estado)
+                    self.MplWidget.canvas.axes.set_xlabel("Fecha")  # Inserta el título del eje X
+                    self.MplWidget.canvas.axes.set_ylabel("Cantidad de casos")  # Inserta el título del eje Y
+                    self.MplWidget.canvas.axes1.set_ylabel("Cantidad de muertes")  # Inserta el título del eje Y
 
             self.MplWidget.canvas.draw()
 
@@ -490,7 +632,9 @@ class MatplotlibWidget(QMainWindow):
         self.indDate.set_index("Date", inplace= True)
 
     def rollingMean(self):
-        print(self.indDate.rolling(2).mean())
+
+        value = self.sliderPromedio.value()
+        return value
 
 app = QApplication([])
 window = MatplotlibWidget()
