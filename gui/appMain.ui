@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1141</width>
-    <height>886</height>
+    <width>1842</width>
+    <height>936</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <rect>
       <x>60</x>
       <y>40</y>
-      <width>1011</width>
+      <width>1531</width>
       <height>571</height>
      </rect>
     </property>
@@ -217,13 +217,38 @@
      <string>Promedio:</string>
     </property>
    </widget>
+   <widget class="QTableWidget" name="tableWidgetCovid">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>650</y>
+      <width>401</width>
+      <height>221</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Fecha</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Casos</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Muertes</string>
+     </property>
+    </column>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1141</width>
+     <width>1842</width>
      <height>26</height>
     </rect>
    </property>
