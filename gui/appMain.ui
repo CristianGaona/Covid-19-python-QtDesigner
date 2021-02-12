@@ -51,7 +51,7 @@
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>690</y>
+      <y>720</y>
       <width>121</width>
       <height>131</height>
      </rect>
@@ -147,7 +147,7 @@
     <property name="geometry">
      <rect>
       <x>760</x>
-      <y>690</y>
+      <y>720</y>
       <width>120</width>
       <height>101</height>
      </rect>
@@ -195,7 +195,7 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="maximum">
      <number>15</number>
@@ -220,8 +220,8 @@
    <widget class="QTableWidget" name="tableWidgetCovid">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>650</y>
+      <x>1160</x>
+      <y>640</y>
       <width>401</width>
       <height>221</height>
      </rect>
@@ -241,6 +241,16 @@
       <string>Muertes</string>
      </property>
     </column>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumberSlider">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>630</y>
+      <width>91</width>
+      <height>51</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
