@@ -98,6 +98,14 @@ Nota: el archivo mat se ha actualizado para incluir datos hasta el 31 de octubre
 
 El repositorio debe actualizarse de forma continua, creando las ramas y comits necesarios. Su proyecto debe contener todos los archivos PYTHON necesarios para ejecutar su programa . Normalmente, tendría tres archivos: el archivo de la aplicación (.py), el archivo .ui con el diseño de la interfaz y los datos datos de prueba. Esto último es útil para asegurarse de que se revise su programa con los datos con los que lo probó, ya que se planea actualizar el archivo de datos regularmente a medida que avanza el tiempo. 
 
+### Solución del proyecto
+
+<div align="center">
+<a href="https://youtu.be/oRDkpQITlqE" target="_blank">
+<img src="./img/Solucion.png" >
+</a>
+<p>Demostración de la solución</p>
+</div>
 
 
 
